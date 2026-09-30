@@ -135,6 +135,11 @@
             <version>${felles.version}</version>
         </dependency>
         <dependency>
+            <groupId>no.nav.familie.felles</groupId>
+            <artifactId>token-klient</artifactId>
+            <version>${felles.version}</version>
+        </dependency>
+        <dependency>
             <groupId>nav-foedselsnummer</groupId>
             <artifactId>core</artifactId>
             <version>${nav-foedselsnummer.version}</version>
