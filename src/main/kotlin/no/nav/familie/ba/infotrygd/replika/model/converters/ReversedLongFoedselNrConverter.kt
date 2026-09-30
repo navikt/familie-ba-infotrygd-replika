@@ -1,0 +1,12 @@
+package no.nav.familie.ba.infotrygd.replika.model.converters
+
+import jakarta.persistence.AttributeConverter
+import no.nav.commons.foedselsnummer.FoedselsNr
+
+class ReversedLongFoedselNrConverter : AttributeConverter<FoedselsNr?, Long?> {
+    private val converter = ReversedFoedselNrConverter()
+
+    override fun convertToDatabaseColumn(attribute: FoedselsNr?): Long? = converter.convertToDatabaseColumn(attribute)?.toLong() ?: 0
+
+    override fun convertToEntityAttribute(dbData: Long?): FoedselsNr? = converter.convertToEntityAttribute(dbData?.toString()?.padStart(11, '0'))
+}

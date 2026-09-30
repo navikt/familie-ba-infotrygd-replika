@@ -1,0 +1,32 @@
+package no.nav.familie.ba.infotrygd.replika.model.dl1
+
+import jakarta.persistence.Column
+import jakarta.persistence.Convert
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import no.nav.familie.ba.infotrygd.replika.model.converters.SakStatusConverter
+import no.nav.familie.ba.infotrygd.replika.model.converters.StatusLopenrConverter
+import no.nav.familie.ba.infotrygd.replika.model.kodeverk.SakStatus
+
+@Entity
+@Table(name = "SA_STATUS_15")
+data class Status(
+    @Id
+    @Column(name = "ID_STATUS", nullable = false, columnDefinition = "DECIMAL")
+    val id: Long,
+    @Column(name = "REGION", columnDefinition = "CHAR")
+    val region: String,
+    @Column(name = "S01_PERSONKEY", columnDefinition = "DECIMAL")
+    val personKey: Long,
+    @Column(name = "S05_SAKSBLOKK", columnDefinition = "CHAR")
+    val saksblokk: String,
+    @Column(name = "S10_SAKSNR", columnDefinition = "CHAR")
+    val saksnummer: String,
+    @Column(name = "S15_LOPENR", columnDefinition = "CHAR")
+    @Convert(converter = StatusLopenrConverter::class)
+    val lopeNr: Long,
+    @Column(name = "S15_STATUS", columnDefinition = "CHAR")
+    @Convert(converter = SakStatusConverter::class)
+    val status: SakStatus,
+)

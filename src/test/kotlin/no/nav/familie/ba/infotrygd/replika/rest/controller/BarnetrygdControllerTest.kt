@@ -1,0 +1,252 @@
+package no.nav.familie.ba.infotrygd.replika.rest.controller
+
+import no.nav.commons.foedselsnummer.FoedselsNr
+import no.nav.familie.ba.infotrygd.replika.model.db2.Beslutning
+import no.nav.familie.ba.infotrygd.replika.model.db2.Endring
+import no.nav.familie.ba.infotrygd.replika.model.db2.LøpeNrFnr
+import no.nav.familie.ba.infotrygd.replika.model.db2.StønadDb2
+import no.nav.familie.ba.infotrygd.replika.repository.BarnRepository
+import no.nav.familie.ba.infotrygd.replika.repository.BeslutningRepository
+import no.nav.familie.ba.infotrygd.replika.repository.EndringRepository
+import no.nav.familie.ba.infotrygd.replika.repository.LøpeNrFnrRepository
+import no.nav.familie.ba.infotrygd.replika.repository.PersonRepository
+import no.nav.familie.ba.infotrygd.replika.repository.SakRepository
+import no.nav.familie.ba.infotrygd.replika.repository.StønadDb2Repository
+import no.nav.familie.ba.infotrygd.replika.repository.StønadRepository
+import no.nav.familie.ba.infotrygd.replika.repository.UtbetalingRepository
+import no.nav.familie.ba.infotrygd.replika.repository.VedtakRepository
+import no.nav.familie.ba.infotrygd.replika.rest.api.InfotrygdLøpendeBarnetrygdResponse
+import no.nav.familie.ba.infotrygd.replika.rest.api.InfotrygdSøkRequest
+import no.nav.familie.ba.infotrygd.replika.rest.api.InfotrygdÅpenSakResponse
+import no.nav.familie.ba.infotrygd.replika.rest.controller.BarnetrygdController.StønadRequest
+import no.nav.familie.ba.infotrygd.replika.service.BarnetrygdService
+import no.nav.familie.ba.infotrygd.replika.testutil.MockOAuth2ServerInitializer
+import no.nav.familie.ba.infotrygd.replika.testutil.TestClient
+import no.nav.familie.ba.infotrygd.replika.testutil.TestData
+import no.nav.familie.kontrakter.ba.infotrygd.InfotrygdSøkResponse
+import no.nav.familie.kontrakter.ba.infotrygd.Sak
+import no.nav.familie.kontrakter.felles.jsonMapper
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.server.ResponseStatusException
+import no.nav.familie.kontrakter.ba.infotrygd.Stønad as StønadDto
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
+@ContextConfiguration(initializers = [MockOAuth2ServerInitializer::class])
+class BarnetrygdControllerTest {
+    @LocalServerPort
+    private var port: Int = 0
+
+    @Autowired
+    private lateinit var testClient: TestClient
+
+    private lateinit var restTemplate: RestTemplate
+
+    @Autowired
+    lateinit var personRepository: PersonRepository
+
+    @Autowired
+    lateinit var stønadRepository: StønadRepository
+
+    @Autowired
+    lateinit var barnRepository: BarnRepository
+
+    @Autowired
+    lateinit var sakRepository: SakRepository
+
+    @Autowired
+    lateinit var vedtakRepository: VedtakRepository
+
+    @Autowired
+    lateinit var løpeNrFnrRepository: LøpeNrFnrRepository
+
+    @Autowired
+    lateinit var stønadDb2Repository: StønadDb2Repository
+
+    @Autowired
+    lateinit var endringRepository: EndringRepository
+
+    @Autowired
+    lateinit var beslutningRepository: BeslutningRepository
+
+    @Autowired
+    lateinit var barnetrygdService: BarnetrygdService
+
+    @Autowired
+    lateinit var utbetalingRepository: UtbetalingRepository
+
+    private val uri =
+        mapOf(
+            "stønad" to "/infotrygd/barnetrygd/stonad",
+            "sak" to "/infotrygd/barnetrygd/saker",
+            "lopende-barnetrygd" to "/infotrygd/barnetrygd/lopende-barnetrygd",
+            "aapen-sak" to "/infotrygd/barnetrygd/aapen-sak",
+        )
+
+    @BeforeEach
+    fun init() {
+        restTemplate = testClient.restTemplate(port)
+    }
+
+    @Test
+    fun `infotrygdsøk etter løpende barnetrygd`() {
+        val (person, opphørPerson) = personRepository.saveAll(listOf(1, 2).map { TestData.person() })
+
+        val barn = barnRepository.saveAndFlush(TestData.barn(person))
+
+        stønadRepository.saveAll(listOf(TestData.stønad(person), TestData.stønad(opphørPerson, opphørtFom = "111111")))
+
+        val requestMedPersonMedLøpendeStønad = InfotrygdSøkRequest(listOf(person.fnr.asString))
+        val requestMedPersonMedOpphørtStønad = InfotrygdSøkRequest(listOf(opphørPerson.fnr.asString))
+        val requestMedBarnTilknyttetLøpendeStønad = InfotrygdSøkRequest(listOf(opphørPerson.fnr.asString), listOf(barn.barnFnr.asString))
+        val requestMedBarnSomIkkeFinnes = InfotrygdSøkRequest(listOf(), listOf(person.fnr.asString))
+
+        assertThat(
+            post(requestMedPersonMedLøpendeStønad, uri["lopende-barnetrygd"], InfotrygdLøpendeBarnetrygdResponse::class.java)
+                .harLøpendeBarnetrygd,
+        ).isTrue
+        assertThat(post(requestMedPersonMedLøpendeStønad, uri["stønad"], InfotrygdSøkResponse::class.java).bruker)
+            .isNotEmpty
+        assertThat(post(requestMedPersonMedOpphørtStønad, uri["stønad"], InfotrygdSøkResponse::class.java))
+            .extracting("bruker", "barn")
+            .containsOnly(emptyList<StønadDto>())
+        assertThat(post(requestMedBarnTilknyttetLøpendeStønad, uri["stønad"], InfotrygdSøkResponse::class.java).barn)
+            .isNotEmpty
+        assertThat(post(requestMedBarnSomIkkeFinnes, uri["stønad"], InfotrygdSøkResponse::class.java))
+            .extracting("bruker", "barn")
+            .containsOnly(emptyList<StønadDto>())
+        assertThat(post(uri = uri["stønad"], responseType = InfotrygdSøkResponse::class.java))
+            .extracting("bruker", "barn")
+            .containsOnly(emptyList<StønadDto>())
+    }
+
+    @Test
+    fun `infotrygdsøk etter saker by fnr`() {
+        val person = personRepository.saveAndFlush(TestData.person())
+        val sak = sakRepository.saveAndFlush(TestData.sak(person))
+        val barn = barnRepository.saveAndFlush(TestData.barn(person))
+
+        val søkPåPersonMedSak = InfotrygdSøkRequest(brukere = listOf(person.fnr.asString))
+        val søkPåBarnTilknyttetSak = InfotrygdSøkRequest(listOf(), listOf(barn.barnFnr.asString))
+
+        assertThat(post(søkPåPersonMedSak, uri["sak"], InfotrygdSøkResponse::class.java))
+            .extracting { it ->
+                it.bruker.map { jsonMapper.convertValue(it, Sak::class.java) }
+            }.isEqualToComparingFieldByFieldRecursively(listOf(barnetrygdService.konverterTilDto(sak)))
+
+        assertThat(post(søkPåBarnTilknyttetSak, uri["sak"], InfotrygdSøkResponse::class.java))
+            .extracting { it ->
+                it.barn.map { jsonMapper.convertValue(it, Sak::class.java) }
+            }.isEqualToComparingFieldByFieldRecursively(listOf(barnetrygdService.konverterTilDto(sak)))
+
+        assertThat(post(uri = uri["sak"], responseType = InfotrygdSøkResponse::class.java).bruker) // søk med tom request
+            .isEmpty()
+    }
+
+    @Test
+    fun `aapen-sak skal svare true når det finnes sak med vedtak uten beslutning, deretter false etter beslutning`() {
+        val person =
+            personRepository.saveAndFlush(TestData.person()).also {
+                løpeNrFnrRepository.saveAndFlush(LøpeNrFnr(1, it.fnr.asString))
+            }
+        val sak = sakRepository.saveAndFlush(TestData.sak(person))
+
+        val vedtak =
+            vedtakRepository.saveAndFlush(TestData.vedtak(sak)).also {
+                stønadDb2Repository.saveAndFlush(StønadDb2(it.stønadId, "BA", 1))
+                endringRepository.saveAndFlush(Endring(it.vedtakId, "  "))
+            }
+
+        val søkRequest = InfotrygdSøkRequest(listOf(person.fnr.asString), emptyList())
+
+        assertThat(post(søkRequest, uri["aapen-sak"], InfotrygdÅpenSakResponse::class.java).harÅpenSak)
+            .isTrue
+
+        beslutningRepository.saveAndFlush(Beslutning(1, vedtak.vedtakId, "J"))
+
+        assertThat(post(søkRequest, uri["aapen-sak"], InfotrygdÅpenSakResponse::class.java).harÅpenSak)
+            .isFalse
+    }
+
+    @Test
+    fun `skal hente stønad basert på personKey, iverksattFom, virkningFom og region`() {
+        val personIdent = "12345678910"
+        val personKey = "031256341278910"
+        val person =
+            TestData.person(fnr = FoedselsNr(personIdent), personKey = personKey.toLong(), tkNr = personKey.substring(0, 4))
+        val stønad = stønadRepository.saveAndFlush(TestData.stønad(person))
+
+        post(
+            uri = "/infotrygd/barnetrygd/stonad/sok",
+            request =
+                StønadRequest(
+                    person.fnr.asString,
+                    stønad.tkNr,
+                    stønad.iverksattFom,
+                    stønad.virkningFom,
+                    stønad.region,
+                ),
+            responseType = StønadDto::class.java,
+        ).also {
+            assertThat(it.id).isEqualTo(stønad.id)
+        }
+    }
+
+    @Test
+    fun `hent stønad basert på id returnerer 404 hvis stønad ikke eksisterer`() {
+        val stønad =
+            stønadRepository.saveAndFlush(
+                TestData.stønad(TestData.person(), virkningFom = (999999 - 201901).toString(), status = "01"), // ordinær barnetrygd fra 2019
+            )
+
+        val response =
+            assertThrows<ResponseStatusException> {
+                get("/infotrygd/barnetrygd/stonad/666", Any::class.java)
+            }
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+    }
+
+    @Test
+    fun noAuth() {
+        uri.values.forEach {
+            val restTemplate = testClient.restTemplateNoAuth(port)
+            val result =
+                assertThrows<ResponseStatusException> {
+                    post(uri = it, restTemplate = restTemplate, responseType = InfotrygdSøkResponse::class.java)
+                }
+            assertThat(result.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
+        }
+    }
+
+    private fun <T : Any> post(
+        request: Any = InfotrygdSøkRequest(listOf()),
+        uri: String?,
+        responseType: Class<T>,
+        restTemplate: RestTemplate = this.restTemplate,
+    ): T {
+        val headers = HttpHeaders().apply { set(HttpHeaders.CONTENT_TYPE, "application/json") }
+        val entity = org.springframework.http.HttpEntity(jsonMapper.writeValueAsString(request), headers)
+        val responseEntity: ResponseEntity<T> = restTemplate.postForEntity(uri!!, entity, responseType)
+        return responseEntity.body!!
+    }
+
+    private fun <T : Any> get(
+        uri: String,
+        responseType: Class<T>,
+    ): T {
+        val responseEntity: ResponseEntity<T> = restTemplate.getForEntity(uri, responseType)
+        return responseEntity.body!!
+    }
+}

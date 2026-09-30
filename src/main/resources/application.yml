@@ -1,0 +1,65 @@
+server.port: 8080
+
+spring:
+  main:
+    banner-mode: "off"
+  application:
+    name: ${NAIS_APP_NAME:familie-ba-infotrygd}
+  datasource:
+    url: ${DB_JDBC_URL}
+  jpa:
+    hibernate:
+      ddl-auto: none
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AZURE_OPENID_CONFIG_ISSUER}
+          audiences:
+            - ${AZURE_APP_CLIENT_ID}
+            - api://${AZURE_APP_CLIENT_ID}
+  flyway:
+    enabled: true
+
+
+management:
+  endpoint:
+    health:
+      show-details: ALWAYS
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+#oidc...
+http.proxy.parametername: notused
+
+springdoc:
+  packages-to-scan: "no.nav.familie.ba.infotrygd.replika"
+  paths-to-match: "/infotrygd/**"
+  swagger-ui:
+    oauth:
+      use-pkce-with-authorization-code-grant: true
+      client-id: ${AZURE_APP_CLIENT_ID}
+      scope-separator: ","
+    disable-swagger-default-url: true
+
+# Klient mot familie-ba-exodus (replikering av statiske Infotrygd-tabeller on-prem -> GCP)
+exodus:
+  base-url: ${EXODUS_BASE_URL}
+  batch-storrelse: 1000
+  scheduler-cron: 0 */5 * * * *
+  maks-sider-per-kjoring: 500
+  # Scheduleren er avskrudd som default - må skrus på eksplisitt (f.eks. i nais-yaml) når vi er
+  # klare for at appen skal begynne å lese/replikere data automatisk.
+  scheduler-enabled: ${EXODUS_SCHEDULER_ENABLED:false}
+
+# Swagger
+AUTHORIZATION_URL: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/authorize
+TOKEN_URL: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+API_SCOPE: api://${AZURE_APP_CLIENT_ID}/.default
+
+TEAMFAMILIE_FORVALTNING_GROUP_ID: "c62e908a-cf20-4ad0-b7b3-3ff6ca4bf38b"
+TEAMFAMILIE_SAKSBEHANDLER_GROUP_ID: "d21e00a4-969d-4b28-8782-dc818abfae65"
+TEAMFAMILIE_VEILEDER_GROUP_ID: "93a26831-9866-4410-927b-74ff51a9107c"
+TEAMFAMILIE_BESLUTTER_GROUP_ID: "9449c153-5a1e-44a7-84c6-7cc7a8867233"

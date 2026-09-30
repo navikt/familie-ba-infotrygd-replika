@@ -1,0 +1,17 @@
+package no.nav.familie.ba.infotrygd.replika.model.db2
+
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import java.io.Serializable
+
+@Entity
+@Table(name = "T_LOPENR_FNR")
+data class LøpeNrFnr(
+    @Id
+    @Column(name = "PERSON_LOPENR", columnDefinition = "DECIMAL")
+    val personLøpenummer: Long,
+    @Column(name = "PERSONNR", columnDefinition = "CHAR")
+    val personnummer: String,
+) : Serializable

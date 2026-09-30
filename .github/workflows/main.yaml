@@ -1,0 +1,39 @@
+# Full pipeline on push to main. Build, test, and deploy to dev + prod
+name: Main
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+    paths-ignore:
+      - '**.md'
+      - '**.MD'
+      - '.github/**.yaml'
+      - '.gitignore'
+      - 'CODEOWNERS'
+      - 'LICENSE'
+
+jobs:
+  build:
+    name: Build
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      id-token: write
+    uses: navikt/familie-baks-gha-workflows/.github/workflows/build-maven-app.yaml@main # ratchet:exclude
+    with:
+      build-image: true
+      push-image: true
+      byosbom: target/classes/META-INF/sbom/application.cdx.json
+      java-version: 25
+  deploy-dev:
+    name: Deploy dev
+    permissions:
+      contents: read
+      id-token: write
+    needs: [build]
+    uses: navikt/familie-baks-gha-workflows/.github/workflows/deploy.yaml@main # ratchet:exclude
+    with:
+      image: ${{ needs.build.outputs.image }}
+      cluster: dev-gcp
+      resource: .nais/app-dev.yaml
