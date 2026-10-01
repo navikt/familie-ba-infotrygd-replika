@@ -1,4 +1,6 @@
 server.port: 8080
+application:
+  name: familie-ba-infotrygd-replika
 
 spring:
   main:

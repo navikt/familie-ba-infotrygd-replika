@@ -9,11 +9,14 @@ import org.testcontainers.containers.wait.strategy.Wait
 
 class MockOAuth2ServerInitializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
     override fun initialize(applicationContext: ConfigurableApplicationContext) {
+        val baseUrl = issuerUrl.removeSuffix("/default")
         TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
             applicationContext,
             "AZURE_OPENID_CONFIG_ISSUER=$issuerUrl",
             "AUTHORIZATION_URL=$issuerUrl/authorize",
             "TOKEN_URL=$issuerUrl/token",
+            "NAIS_TOKEN_ENDPOINT=$baseUrl/api/v1/token",
+            "NAIS_TOKEN_EXCHANGE_ENDPOINT=$baseUrl/api/v1/token/exchange",
         )
     }
 

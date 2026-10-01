@@ -10,6 +10,8 @@ spring:
     url: jdbc:tc:postgresql:18.6://localhost/familie-ba-infotrygd-replika
 
 NAIS_APP_NAME: familie-ba-infotrygd
+EXODUS_BASE_URL: dummy
+EXODUS_SCOPE: dummy
 
 AUTHORIZATION_URL: ${AZURE_OPENID_CONFIG_ISSUER}/authorize
 TOKEN_URL: ${AZURE_OPENID_CONFIG_ISSUER}/token
