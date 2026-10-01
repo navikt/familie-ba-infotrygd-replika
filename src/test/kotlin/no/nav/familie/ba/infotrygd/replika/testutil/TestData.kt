@@ -15,6 +15,7 @@ import no.nav.familie.ba.infotrygd.replika.model.dl1.Stønad
 import no.nav.familie.ba.infotrygd.replika.nextId
 import no.nav.familie.ba.infotrygd.replika.utils.DatoUtils
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 object TestData {
@@ -112,8 +113,17 @@ object TestData {
                         1900.0,
                         "MS",
                         typeUtbetaling = "M",
+                        tidspunktReg = LocalDateTime.now(),
                     ),
-                    Delytelse(DelytelseId(1, 2), LocalDate.now(), null, 1940.0, "MS", typeUtbetaling = "M"),
+                    Delytelse(
+                        DelytelseId(1, 2),
+                        LocalDate.now(),
+                        null,
+                        1940.0,
+                        "MS",
+                        typeUtbetaling = "M",
+                        tidspunktReg = LocalDateTime.now(),
+                    ),
                 ),
         )
 

@@ -8,6 +8,7 @@ import jakarta.persistence.Table
 import no.nav.familie.ba.infotrygd.replika.model.converters.Char2Converter
 import no.nav.familie.ba.infotrygd.replika.model.converters.CharConverter
 import java.time.LocalDate
+import java.time.LocalDateTime
 import no.nav.familie.kontrakter.ba.infotrygd.Delytelse as DelytelseDto
 
 @Entity
@@ -30,6 +31,8 @@ data class Delytelse(
     @Column(name = "TYPE_UTBETALING", columnDefinition = "CHAR")
     @Convert(converter = CharConverter::class)
     val typeUtbetaling: String,
+    @Column(name = "TIDSPUNKT_REG", columnDefinition = "TIMESTAMP")
+    val tidspunktReg: LocalDateTime,
 )
 
 fun Delytelse.toDelytelseDto(): DelytelseDto = DelytelseDto(this.fom, this.tom, this.beløp, this.typeDelytelse, this.oppgjørsordning, this.typeUtbetaling)
