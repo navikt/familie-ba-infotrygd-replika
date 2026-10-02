@@ -17,7 +17,7 @@ enum class ExodusTabell(
     SA_SAK_10("sa_sak_10", listOf("id_sak")),
     SA_STATUS_15("sa_status_15", listOf("id_status")),
     T_BESLUT("t_beslut", listOf("beslutning_id")),
-    T_DELYTELSE("t_delytelse", listOf("vedtak_id", "linje_id")),
+    T_DELYTELSE("t_delytelse", listOf("vedtak_id", "type_delytelse", "tidspunkt_reg")),
     T_LOPENR_FNR("t_lopenr_fnr", listOf("person_lopenr")),
     T_STONAD("t_stonad", listOf("stonad_id")),
     T_STONADSKLASSE("t_stonadsklasse", listOf("vedtak_id", "kode_nivaa", "kode_klasse")),
