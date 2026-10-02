@@ -1,5 +1,6 @@
 package no.nav.familie.ba.infotrygd.replika.exodus
 
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
@@ -16,6 +17,7 @@ class ExodusClient(
     exodusProperties: ExodusProperties,
 ) {
     private val baseUrl = exodusProperties.baseUrl.trimEnd('/')
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     fun hentUttrekk(
         tabell: ExodusTabell,
@@ -29,6 +31,7 @@ class ExodusClient(
                 .body(HentUttrekkRequest(tabell.tabellNavn, iterator, antallRader.toLong()))
                 .retrieve()
                 .body<HentUttrekkResponse>() ?: HentUttrekkResponse(iterator = iterator.orEmpty())
+                .also { logger.info("Hentet uttrekk for tabell ${tabell.tabellNavn}") }
         } catch (e: HttpClientErrorException.Conflict) {
             throw NyBaselineException(tabell)
         }
