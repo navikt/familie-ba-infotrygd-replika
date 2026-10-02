@@ -49,9 +49,9 @@ springdoc:
 # Klient mot familie-ba-exodus (replikering av statiske Infotrygd-tabeller on-prem -> GCP)
 exodus:
   base-url: ${EXODUS_BASE_URL}
-  batch-storrelse: 100
+  batch-storrelse: 10
   scheduler-cron: 0 */5 * * * *
-  maks-sider-per-kjoring: 50
+  maks-sider-per-kjoring: 5
   # Scheduleren er avskrudd som default - må skrus på eksplisitt (f.eks. i nais-yaml) når vi er
   # klare for at appen skal begynne å lese/replikere data automatisk.
   scheduler-enabled: ${EXODUS_SCHEDULER_ENABLED:false}
