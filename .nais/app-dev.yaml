@@ -31,10 +31,10 @@ spec:
     # /actuator/prometheus
   resources: # Optional. See: http://kubernetes.io/docs/user-guide/compute-resources/
     limits:
-      memory: 512Mi  # app will be killed if exceeding these limits
+      memory: 2096Mi  # app will be killed if exceeding these limits
     requests: # App is guaranteed the requested resources and  will be scheduled on nodes with at least this amount of resources available
-      cpu: 100m
-      memory: 512Mi
+      cpu: 400m
+      memory: 2096Mi
   observability:
     logging:
       destinations:
