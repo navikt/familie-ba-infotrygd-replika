@@ -1,0 +1,1 @@
+alter table t_delytelse alter column linje_id drop not null;
