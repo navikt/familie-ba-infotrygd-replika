@@ -42,7 +42,18 @@ Kilden har to kolonner for undervalg (`S10_UNDERVALG_1` og `S10_UNDERVALG_2`). R
 
 ## Stønadsstatus (`b20_status`)
 
-`ba_stoenad_20.b20_status` er den samme klassifiseringen som i saken, men med færre detaljer. Sammen med `b20_eos` gir den valg og undervalg i `sa_sak_10`.
+`ba_stoenad_20.b20_status` kategoriserer stønaden:
+
+| Kode | Betydning |
+|---|---|
+| `01` | Ordinær barnetrygd |
+| `02` | Utvidet barnetrygd |
+| `00` | Manuelt beregnet barnetrygd |
+| `04` | Institusjon |
+
+Kilde: teamet.
+
+Statusen har færre detaljer enn valg og undervalg i `sa_sak_10`. Sammen med `b20_eos` tilsvarer den likevel valg og undervalg i saken:
 
 | `b20_status` | `b20_eos` | Betydning | Valg | Undervalg |
 |---|---|---|---|---|
@@ -58,34 +69,40 @@ Kilden har to kolonner for undervalg (`S10_UNDERVALG_1` og `S10_UNDERVALG_2`). R
 
 Håndboken bruker også status `00` for EØS-differanseutbetaling.
 
-Kilde: Confluence-siden «Databaser» (Modernisering av IKT i Nav), etter beskrivelse fra Tore Hågensen.
+Kilde for tabellen over valg og undervalg: Confluence-siden «Databaser» (Modernisering av IKT i Nav), etter beskrivelse fra Tore Hågensen.
 
 ## Sakstype
 
 `sa_sak_10.s10_type`.
 
+Kilden *hjelpemeny* er hjelpemenyen i Infotrygd for feltet TYPE, vist for rutine `BA` og valg `OR`. Alle kodene i hjelpemenyen står i tabellen.
+
 | Kode | Betydning | Kilde |
 |---|---|---|
-| `S` | Søknad | håndbok |
-| `R` | Revurdering | håndbok |
-| `K` | Klage | håndbok |
-| `A` | Anke | håndbok |
+| `A` | Anke | hjelpemeny, håndbok |
+| `AS` | Automatisk stønad | kode (kommentar i `SakRepository.findBarnetrygdsakerByBarnFnr`) |
 | `AT` | Anke tilbakebetaling | håndbok |
-| `I` | Informasjonssak | håndbok |
-| `FS` | Forespørsel, for eksempel den årlige egenerklæringen for utvidet barnetrygd | håndbok |
-| `SE` | Søknad om ettergivelse av tilbakebetaling | håndbok |
+| `DF` | Dispensasjon foreldelse | hjelpemeny |
+| `DI` | Dokumentinnsyn | hjelpemeny |
+| `EG` | Etterlyse girokort | hjelpemeny |
+| `FL` | Flyttesak | hjelpemeny, kode |
+| `FS` | Forespørsel, for eksempel den årlige egenerklæringen for utvidet barnetrygd | hjelpemeny, håndbok |
+| `I` | Informasjonssak | hjelpemeny, håndbok |
+| `J` | Journalsak | hjelpemeny |
+| `JP` | Journalsak fra privatperson | hjelpemeny |
+| `JT` | Journalsak fra trygdekontor | hjelpemeny |
+| `JU` | Journalsak fra utenlandsk trygdemyndighet | hjelpemeny |
+| `K` | Klage | hjelpemeny, håndbok |
+| `KE` | Klage på ettergivelse | hjelpemeny, håndbok |
+| `KS` | Kontrollsak | hjelpemeny |
+| `KT` | Klage tilbakebetaling | hjelpemeny |
+| `R` | Revurdering | hjelpemeny, håndbok |
+| `S` | Søknad | hjelpemeny, håndbok |
+| `SE` | Søknad om ettergivelse (av tilbakebetaling) | hjelpemeny, håndbok |
 | `T` | Tilbakebetalingssak (feilutbetaling) | håndbok, SB-håndbok |
 | `TA` | Feilutbetalingssak. Nevnt sammen med `T`, nøyaktig betydning ukjent | SB-håndbok |
-| `KE` | Klage på ettergivelse | håndbok |
-| `FL` | Flyttesak | kode (kommentar i `SakRepository.findBarnetrygdsakerByBarnFnr`) |
-| `AS` | Automatisk stønad | kode (kommentar i `SakRepository.findBarnetrygdsakerByBarnFnr`) |
 
-Kommentarene i `SakRepository` beskriver typene i spørringen, men de stemmer ikke alltid:
-
-- I `findBarnetrygdsakerByBarnFnr` stemmer kommentaren med listen `('S', 'R', 'K', 'A', 'FL', 'AS')`.
-- I `findBarnetrygdsakerByFnr` er kommentaren kopiert fra metoden over og stemmer ikke med listen `('S', 'R', 'FL', 'AS', 'FS')`. Kommentaren nevner klage og anke, men `K` og `A` er ikke med i listen. Den nevner heller ikke `FS`.
-
-Beskrivelsen av `FS` som forespørsel kommer fra håndboken.
+`AS`, `AT`, `T` og `TA` står ikke i hjelpemenyen for valg `OR`. Det er uklart om de bare gjelder andre valg, eller om de er utgått.
 
 ## Resultat
 
@@ -114,13 +131,35 @@ Beskrivelsen av `FS` som forespørsel kommer fra håndboken.
 
 `sa_status_15.s15_status`, i koden `SakStatus`. Viser hvor saken er i saksbehandlingen.
 
+Gyldige verdier ifølge hjelpemenyen i Infotrygd (felt STATUS):
+
+| Kode | Betydning |
+|---|---|
+| `FB` | Ferdigbehandlet |
+| `FI` | Ferdig iverksatt |
+| `IP` | Ikke påbegynt |
+| `RF` | Returnert feilsendt |
+| `RM` | Returnert midlertidig |
+| `RT` | Returnert til |
+| `SG` | Sendt til godkjenning |
+| `ST` | Sendt til |
+| `UB` | Under behandling |
+| `UK` | Underkjent |
+| `VD` | Videresendt Direktoratet |
+| `VI` | Venter på iverksetting |
+| `VT` | Videresendt Trygderetten |
+
+`SakStatus` har i tillegg `HB` (henlagt/bortfalt) og blank (ikke behandlet). Ingen av dem står i hjelpemenyen.
+
+Kilde: hjelpemenyen i Infotrygd.
+
 Den nyere håndboken beskriver flyten ved oversendelse til klageinstansen:
 
 1. Saken sendes: status blir `ST` (sendt til), og behandlende enhet blir klageinstansen, for eksempel `K02`.
 2. Saken kommer tilbake: status blir `RT` (retur til), og behandlende enhet blir enheten som sendte saken.
 3. Returdato registreres på hendelseslinjen: status blir `FB` (ferdig behandlet).
 
-Kilde: SB-håndbok. De andre kodene står i `SakStatus`.
+Kilde for flyten: SB-håndbok.
 
 ## Stønadstype for barn
 
@@ -206,6 +245,20 @@ Kilde: håndbok.
 Kode `5` betyr migrert ut av Infotrygd når stønaden kan knyttes til en nyere sak eller stønad fra perioden da migreringen startet, omtrent fra og med 2021. Koden alene er ikke tilstrekkelig til å fastslå at stønaden er migrert.
 
 Andre koder er ikke dokumentert.
+
+## Vedtakstype
+
+Feltet vedtakstype i skjermbildet BA VH (barnetrygd, vedtakshistorikk). Feltet har bare disse tre verdiene.
+
+| Kode | Betydning |
+|---|---|
+| `A` | Automatisk vedtak. Opprettet av rutinen for automatisk tildeling av barnetrygd til nyfødte |
+| `O` | Omregnet vedtak. Opprettet automatisk ved satsendring |
+| `M` | Alle andre vedtak, både manuelle og maskinelle (for eksempel omregning når barnet fyller 6 eller 18 år) |
+
+Den eneste kolonnen i replika som passer, er `sa_sak_10.s10_vedtakstype` (`char(1)`). At skjermfeltet er lagret i denne kolonnen, er ikke bekreftet.
+
+Kilde: teamet.
 
 ## Brevkode på hendelse
 
