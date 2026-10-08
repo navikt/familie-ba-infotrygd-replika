@@ -128,7 +128,7 @@ Disse kolonnene finnes i de fleste tabellene og beskriver raden, ikke domenet:
 | `oppdatert` | Siste endring i replika |
 | `kilde_is` | Kildesystem i Infotrygd |
 | `region` | Infotrygd-region (`1`, `2`, `3` …). Del av personnøkkelen i DL1 |
-| `tk_nr` | Trygdekontornummer (enhet) |
+| `tk_nr` | Trygdekontornummer. Tilsvarer kommunenummeret (4 sifre). Oslo har flere kommunenumre, så samme kommune kan ha flere `tk_nr` |
 | `db_splitt` | Splittnøkkel fra Oracle. `BA` for barnetrygd, `99` for sak, blank for DB2 |
 
 ## Barnetrygd (DL1)
@@ -157,7 +157,7 @@ En stønadsperiode. En ny rad opprettes ved hvert vedtak som endrer stønaden.
 | `b20_virkfom_seq` | Virkning fra og med: måneden stønadsretten oppstod (sekvensmåned). Er den før iverksatt, gir mellomperioden etterbetaling eller returføring |
 | `b20_opphoert_vfom` | Opphør fra og med: første måned uten løpende ytelse (`mmåååå`, `000000` = løpende) |
 | `b20_opphoert_iver` | Når opphøret ble iverksatt |
-| `b20_opphorsgrunn` | Kode for opphørsgrunn |
+| `b20_opphorsgrunn` | Kode for opphørsgrunn. Se [kodeverk](kodeverk.md#opphørsgrunn) |
 | `b20_blokk`, `b20_sak_nr` | Saksblokk og saksnummer. Kobler til `sa_sak_10` |
 | `b20_status` | Grov klassifisering: `01` ordinær, `02` utvidet, `04` institusjonsbarn, `00` manuell beregning. Sammen med `b20_eos` gir den valg og undervalg i saken. Se [kodeverk](kodeverk.md#stønadsstatus-b20_status) |
 | `b20_tekstkode` | Standardtekst i vedtaksbrevet. Se [kodeverk](kodeverk.md#tekstkode) |

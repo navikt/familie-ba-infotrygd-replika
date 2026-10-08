@@ -104,6 +104,7 @@ Beskrivelsen av `FS` som forespørsel kommer fra håndboken.
 | `RO` | Redusert til ordinær stønad | håndbok |
 | `DI` | Delvis innvilget | håndbok |
 | `HB` | Henlagt/bortfalt. Brukes når saken er feilregistrert, for eksempel på feil person | SB-håndbok |
+| `FB` | Ferdig behandlet | teamet |
 
 `SB` (sak i bero) skal bare brukes når retten ikke har oppstått ennå. Saken får da nivå `TK` og oppfølging om 13 uker (*SB-håndbok*).
 
@@ -194,6 +195,18 @@ Kilde: håndbok.
 
 Kilde: håndbok.
 
+## Opphørsgrunn
+
+`ba_stoenad_20.b20_opphorsgrunn`.
+
+| Kode | Betydning | Kilde |
+|---|---|---|
+| `5` | Migrert ut av Infotrygd, se forbeholdet under | teamet |
+
+Kode `5` betyr migrert ut av Infotrygd når stønaden kan knyttes til en nyere sak eller stønad fra perioden da migreringen startet, omtrent fra og med 2021. Koden alene er ikke tilstrekkelig til å fastslå at stønaden er migrert.
+
+Andre koder er ikke dokumentert.
+
 ## Brevkode på hendelse
 
 `sa_hendelse_20.s20_tekstkode_1`. Brevkodene som ba-sak har brukt for å sjekke om et brev er sendt (`HendelseRepository.findHendelseByFnrInAndTekstKoderIn`). Infotrygd lagrer den korte koden. Navnet i parentes er enum-verdien i ba-sak.
@@ -215,15 +228,47 @@ Kilde: ba-sak.
 
 ## Konto
 
-Kontoene på utbetalingslinjene. I håndboken er kontoene tre- eller sjusifret. `ba_utbetaling_30.b30_kontonr` er åttesifret, så formatet har endret seg.
+Kontoene på utbetalingslinjene (`ba_utbetaling_30.b30_kontonr`). Kontoplanen har endret seg over tid. De tre- og sjusifrede kontoene øverst er fra håndboken (1997) og er utgått.
 
-| Konto (håndbok) | Betydning |
+| Kontonummer | Betydning | Status | Kilde |
+|---|---|---|---|
+| `601` | Barnetrygd | Utgått (1997) | håndbok |
+| `602` | Nord-Norge-tillegg | Utgått (1997) | håndbok |
+| `603` | Småbarnstillegg | Utgått (1997) | håndbok |
+| `0540006` | Returføring og korreksjon | Utgått (1997) | håndbok |
+| `0540008` | A konto (forskudd) | Utgått (1997) | håndbok |
+| `052xxxx` | Andre trekk, via kreditornummer | Utgått (1997) | håndbok |
+| `06030000` | Småbarnstillegg (657 kr per måned) | Avviklet 1. august 2003 | teamet |
+| `06040000` | Ekstra småbarnstillegg, i dag kalt småbarnstillegg (660 kr per måned). Gis til enslige forsørgere med utvidet barnetrygd, full overgangsstønad og barn under 3 år | Gammelt nummer, men brukt i koden | teamet, kode |
+| `8000010` | Barnetrygd, ordinær og utvidet. Delytelseskode `MS` | I bruk | teamet |
+| `8001110` | Småbarnstillegg. Delytelseskode `SM` | I bruk | teamet |
+| `8001010` | Finnmarkstillegg. Delytelseskode `FI` | Avviklet 1. april 2014 | teamet |
+| `8001210` | Svalbardtillegg. Delytelseskode `SV` | Avviklet 1. april 2014 | teamet |
+
+Koden kjenner igjen småbarnstillegg på `06040000` (`Utbetaling.erSmåbarnstillegg`), selv om kilden kaller nummeret gammelt. `800xxxx` er kontonumrene i Oppdragssystemet som delytelseskoden peker på (se under).
+
+## Delytelseskode
+
+Delytelseskoden er de to siste tegnene i stønadsklassifiseringskoden (klassekoden). Den viser hvilken konto i Oppdragssystemet (OS) ytelsen betales fra.
+
+| Kode | Betydning | Kontonummer i Oppdrag |
+|---|---|---|
+| `MS` | Barnetrygd, ordinær og utvidet | `8000010` |
+| `SM` | Småbarnstillegg | `8001110` |
+| `FI` | Finnmarkstillegg. Avviklet 1. april 2014 | `8001010` |
+| `SV` | Svalbardtillegg. Avviklet 1. april 2014 | `8001210` |
+
+Barnetrygd betales i dag fra to kontoer i OS: `MS` og `SM`. `SM` finnes bare på klassekodene for utvidet barnetrygd.
+
+Kilde: teamet.
+
+## Fagområder i Oppdragssystemet
+
+| Kode | Betydning |
 |---|---|
-| `601` | Barnetrygd |
-| `602` | Nord-Norge-tillegg |
-| `603` | Småbarnstillegg |
-| `0540006` | Returføring og korreksjon |
-| `0540008` | A konto (forskudd) |
-| `052xxxx` | Andre trekk, via kreditornummer |
+| `IT05` | Infotrygd, barnetrygd |
+| `MIT05` | Manuell korrigering av barnetrygd i Infotrygd, gjort av NØS |
+| `BATR` | Barnetrygd fra ba-sak (ordinær og utvidet) |
+| `BATRSMA` | Småbarnstillegg fra ba-sak |
 
-Konto `06040000` er småbarnstillegg (bekreftet av teamet). Koden bruker samme verdi (`Utbetaling.erSmåbarnstillegg`). Kontoplanen har altså endret seg siden 1997, da småbarnstillegget lå på konto `603`.
+Kilde: teamet.
