@@ -7,8 +7,17 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
+/**
+ * Sakstyper brukt i spørringene: S = søknad, R = revurdering, K = klage, A = anke,
+ * FL = flyttesak, AS = automatisk stønad. For FS og øvrige koder, se Confluence-siden om sakskoder i README.
+ * Valg: OR = ordinær barnetrygd, UT = utvidet barnetrygd.
+ */
 @Repository
 interface SakRepository : JpaRepository<Sak, Long> {
+    /**
+     * JPQL. Henter barnetrygdsaker (kapittel `BA`) der stønadsmottaker har fødselsnummer [fnr].
+     * Tar med sakstypene S, R, FL, AS og FS. Klage (K) og anke (A) er ikke med.
+     */
     @Query(
         """
         SELECT s FROM Sak s
@@ -18,6 +27,11 @@ interface SakRepository : JpaRepository<Sak, Long> {
     ) // søknad, revurdering, klage, anke, flyttesak, automatisk stønad,
     fun findBarnetrygdsakerByFnr(fnr: FoedselsNr): List<Sak>
 
+    /**
+     * JPQL. Henter barnetrygdsaker (kapittel `BA`) til stønadsmottakere som har minst ett av barna i
+     * [barnFnr] registrert. Saken kobles til barnet på personnøkkel og region.
+     * Tar med sakstypene S, R, K, A, FL og AS.
+     */
     @Query(
         """
         SELECT sak FROM Sak sak
@@ -30,6 +44,11 @@ interface SakRepository : JpaRepository<Sak, Long> {
     ) // søknad, revurdering, klage, anke, flyttesak, automatisk stønad
     fun findBarnetrygdsakerByBarnFnr(barnFnr: List<FoedselsNr>): List<Sak>
 
+    /**
+     * JPQL. Henter sakene om utvidet barnetrygd (valg `UT`) som hører til [stonad].
+     * Saken kobles til stønaden på personnøkkel, saksblokk, saksnummer og region.
+     * Tar med sakstypene S, R, K, A, FL og AS.
+     */
     @Query(
         """
         SELECT s FROM Sak s 
@@ -43,6 +62,10 @@ interface SakRepository : JpaRepository<Sak, Long> {
     )
     fun hentUtvidetBarnetrygdsakerForStønad(stonad: TrunkertStønad): List<Sak>
 
+    /**
+     * JPQL. Som [hentUtvidetBarnetrygdsakerForStønad], men tar med både ordinær (`OR`)
+     * og utvidet (`UT`) barnetrygd.
+     */
     @Query(
         """
         SELECT s FROM Sak s 

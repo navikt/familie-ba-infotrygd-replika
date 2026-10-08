@@ -9,6 +9,11 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface UtbetalingRepository : JpaRepository<Utbetaling, Long> {
+    /**
+     * JPQL. Henter de månedlige utbetalingene (utbetalingstype `M`) som hører til [stonad].
+     * Utbetalingen kobles til stønaden på personnøkkel, første utbetalingsmåned
+     * (= stønadens iverksattFom) og virkningsdato.
+     */
     @Query(
         """
         SELECT utbet FROM Utbetaling utbet

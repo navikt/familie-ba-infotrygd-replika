@@ -194,6 +194,25 @@ Kilde: håndbok.
 
 Kilde: håndbok.
 
+## Brevkode på hendelse
+
+`sa_hendelse_20.s20_tekstkode_1`. Brevkodene som ba-sak har brukt for å sjekke om et brev er sendt (`HendelseRepository.findHendelseByFnrInAndTekstKoderIn`). Infotrygd lagrer den korte koden. Navnet i parentes er enum-verdien i ba-sak.
+
+| Kode | Betydning | Navn i ba-sak |
+|---|---|---|
+| `BA04` | Batch, opphør småbarnstillegg | `BREV_BATCH_OPPHØR_SMÅBARNSTILLLEGG` |
+| `BA05` | Batch, innvilget småbarnstillegg | `BREV_BATCH_INNVILGET_SMÅBARNSTILLEGG` |
+| `BA37` | Batch, omregning barn 18 år | `BREV_BATCH_OMREGNING_BARN_18_ÅR` |
+| `BA18` | Batch, omregning barn 6 år | `BREV_BATCH_OMREGNING_BARN_6_ÅR` |
+| `B001` | Manuell, opphør småbarnstillegg | `BREV_MANUELL_OPPHØR_SMÅBARNSTILLLEGG` |
+| `B002` | Manuell, innvilget småbarnstillegg | `BREV_MANUELL_INNVILGET_SMÅBARNSTILLEGG` |
+| `B003` | Manuell, omregning barn 18 år | `BREV_MANUELL_OMREGNING_BARN_18_ÅR` |
+| `BA19` | Manuell, omregning barn 6 år | `BREV_MANUELL_OMREGNING_BARN_6_ÅR` |
+
+Aksjonsdatoen (`s20_aksjonsdato_seq`) lagres invertert som `99999999 - yyyyMMdd`. En lavere verdi betyr en senere dato.
+
+Kilde: ba-sak.
+
 ## Konto
 
 Kontoene på utbetalingslinjene. I håndboken er kontoene tre- eller sjusifret. `ba_utbetaling_30.b30_kontonr` er åttesifret, så formatet har endret seg.

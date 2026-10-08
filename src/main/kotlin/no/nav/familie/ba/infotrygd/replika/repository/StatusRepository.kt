@@ -8,6 +8,10 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface StatusRepository : JpaRepository<Status, Long> {
+    /**
+     * JPQL. Henter alle statusrader (statushistorikken) for [sak].
+     * Status kobles til saken på personnøkkel, saksblokk, saksnummer og region.
+     */
     @Query(
         """
         SELECT s From Status s
