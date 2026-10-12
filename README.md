@@ -6,6 +6,7 @@ REST-tjeneste for oppslag mot historiske barnetrygddata i Infotrygd via repliker
 https://confluence.adeo.no/spaces/MODNAV/pages/358694924/Databaser
 https://confluence.adeo.no/spaces/TFA/pages/346923538/Sakskoder+sakstyper+i+Infotrygd
 https://navno.sharepoint.com/sites/fag-og-ytelser-fagsystemer/Delte%20dokumenter/Forms/AllItems.aspx?id=/sites/fag-og-ytelser-fagsystemer/Delte%20dokumenter/Infotrygd/Brukerh%C3%A5ndb%C3%B8ker%20Infotrygd/14%20-%20Brukerh%C3%A5ndbok%20Infotrygd%20Saksbehandlingsrutinen%20-%20ny%20versjon%20061216%20%281%29.pdf&parent=/sites/fag-og-ytelser-fagsystemer/Delte%20dokumenter/Infotrygd/Brukerh%C3%A5ndb%C3%B8ker%20Infotrygd
+https://confluence.adeo.no/spaces/TFA/pages/409984169/Diverse+koder+i+Infotrygd
 
 ## Hva tjenesten tilbyr
 
