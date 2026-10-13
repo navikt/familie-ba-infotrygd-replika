@@ -7,6 +7,10 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface PersonRepository : JpaRepository<Person, Long> {
+    /**
+     * JPQL. Henter mottakernummeret til personen med [personKey].
+     * Returnerer `null` hvis personen ikke finnes eller mangler mottakernummer.
+     */
     @Query(
         """
         SELECT p.mottakerNummer FROM Person p

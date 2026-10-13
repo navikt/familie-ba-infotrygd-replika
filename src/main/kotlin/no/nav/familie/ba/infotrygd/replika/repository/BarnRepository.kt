@@ -9,6 +9,10 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface BarnRepository : JpaRepository<Barn, Long> {
+    /**
+     * JPQL. Henter alle barnerader der barnets fødselsnummer er i [barnFnrList].
+     * Ingen filtrering på periode, så både løpende og avsluttede barn returneres.
+     */
     @Query(
         """
         SELECT b FROM Barn b
@@ -17,6 +21,10 @@ interface BarnRepository : JpaRepository<Barn, Long> {
     )
     fun findBarnByFnrList(barnFnrList: List<FoedselsNr>): List<Barn>
 
+    /**
+     * JPQL. Henter barna som hører til en bestemt stønad. Barn knyttes til stønaden på
+     * personnøkkel, iverksettingsdato, virkningsdato og region.
+     */
     @Query(
         """
         SELECT b FROM Barn b
@@ -28,6 +36,11 @@ interface BarnRepository : JpaRepository<Barn, Long> {
     )
     fun findBarnByStønad(stonad: TrunkertStønad): List<Barn>
 
+    /**
+     * JPQL. Henter barn registrert på stønadsmottakeren med [personKey].
+     * Uten [historikk] returneres bare barn med løpende barnetrygd (`barnetrygdTom = '000000'`,
+     * dvs. ingen sluttdato). Med `historikk = true` returneres alle barn.
+     */
     @Query(
         """
         SELECT b FROM Barn b

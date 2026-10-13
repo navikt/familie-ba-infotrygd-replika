@@ -7,6 +7,10 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface VedtakRepository : JpaRepository<Vedtak, Long> {
+    /**
+     * JPQL. Henter vedtakene på saken med [saksblokk] og [saksnummer] for personen [fnr].
+     * Fødselsnummeret slås opp til personløpenummer via `LøpeNrFnr` (T_LOPENR_FNR).
+     */
     @Query(
         """
         SELECT v FROM Vedtak v
@@ -23,6 +27,18 @@ interface VedtakRepository : JpaRepository<Vedtak, Long> {
         saksblokk: String,
     ): List<Vedtak>
 
+    /**
+     * JPQL. Teller vedtak på barnetrygd som venter på beslutning for personen [fnr].
+     *
+     * Et vedtak telles når:
+     * - stønaden er på rutine `BA`
+     * - vedtaket ikke har resultatkode `HB`
+     * - endringskoden ikke er `UA` eller `AN`
+     * - vedtaket ikke er godkjent av beslutter (ingen Beslutning med `godkjent2 = 'J'`)
+     * - vedtaket har minst én delytelse
+     *
+     * Brukes for å avgjøre om personen har en åpen sak til beslutning.
+     */
     @Query(
         """
         SELECT count(*) FROM LøpeNrFnr l, StønadDb2 s, Vedtak v, Endring e
@@ -45,6 +61,14 @@ interface VedtakRepository : JpaRepository<Vedtak, Long> {
     )
     fun tellAntallÅpneSakerPåPerson(fnr: String): Long
 
+    /**
+     * Native SQL. Henter stønadsklassifiseringen (T_STONADSKLASSE) for alle barnetrygdvedtak
+     * (rutine `BA`) på saken med [tkNr], [saksblokk] og [saksnummer] for personen [fnr].
+     *
+     * Hver rad er ett nivå i klassifiseringen av ett vedtak. Nivå `02` gir valget
+     * (f.eks. `OR` eller `UT`) og nivå `03` gir undervalget (f.eks. `MD`).
+     * `{h-schema}` erstattes av Hibernate med standardskjemaet.
+     */
     @Query(
         """
         SELECT s.vedtak_id vedtakId, s.kode_nivaa kodeNivaa, s.kode_klasse kodeKlasse FROM {h-schema}T_STONADSKLASSE s
