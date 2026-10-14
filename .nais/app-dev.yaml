@@ -97,4 +97,4 @@ spec:
     - name: EXODUS_SCOPE
       value: api://dev-fss.teamfamilie.familie-ba-exodus/.default
     - name: EXODUS_SCHEDULER_ENABLED
-      value: "true"
+      value: "false"
