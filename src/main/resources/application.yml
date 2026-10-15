@@ -38,7 +38,9 @@ http.proxy.parametername: notused
 
 springdoc:
   packages-to-scan: "no.nav.familie.ba.infotrygd.replika"
-  paths-to-match: "/infotrygd/**"
+  paths-to-match:
+    - "/infotrygd/**"
+    - "/api/forvalter/**"
   swagger-ui:
     oauth:
       use-pkce-with-authorization-code-grant: true
