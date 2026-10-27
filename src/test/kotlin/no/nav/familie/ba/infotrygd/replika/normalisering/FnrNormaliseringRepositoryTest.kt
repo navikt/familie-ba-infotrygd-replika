@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
 import java.util.stream.Stream
 
-@JdbcTest
+@JdbcTest(properties = ["spring.datasource.url=jdbc:tc:postgresql:18.6://localhost/fnr-normalisering"])
 @Import(FnrNormaliseringRepository::class)
 @ActiveProfiles("test")
 class FnrNormaliseringRepositoryTest {
