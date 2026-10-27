@@ -13,7 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
 
-@JdbcTest
+@JdbcTest(properties = ["spring.datasource.url=jdbc:tc:postgresql:18.6://localhost/seq-dato"])
 @Import(SeqDatoRepository::class)
 @ActiveProfiles("test")
 class SeqDatoRepositoryTest {
