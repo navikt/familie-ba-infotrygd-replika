@@ -31,7 +31,7 @@
         <felles.version>4.20261026180911_c3ff6d9</felles.version>
         <kontrakter.version>4.0_20261014103049_c61507f</kontrakter.version>
         <coroutines.version>1.11.0</coroutines.version>
-        <okhttp3.version>5.5.0</okhttp3.version>
+        <okhttp3.version>5.5.1</okhttp3.version>
         <testcontainers.postgresql.version>1.21.4</testcontainers.postgresql.version>
         <logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
 
