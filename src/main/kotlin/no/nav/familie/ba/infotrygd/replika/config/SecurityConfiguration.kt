@@ -27,7 +27,6 @@ class SecurityConfiguration(
                         "/internal/health/**",
                         "/internal/metrics/**",
                         "/internal/prometheus",
-                        "/actuator/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html",
                         "/v3/api-docs/**",

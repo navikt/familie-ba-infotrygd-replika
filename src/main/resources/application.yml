@@ -47,14 +47,17 @@ management:
       base-path: /internal
       exposure:
         include: health,prometheus
-    health:
-      livenessstate:
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+    db:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
         enabled: true
-      readinessstate:
-        enabled: true
-      db:
-        enabled: true
-
 #oidc...
 http.proxy.parametername: notused
 

@@ -26,7 +26,7 @@ spec:
     cpuThresholdPercentage: 50 # total cpu percentage threshold on deployment, at which point it will increase number of pods if current < max
   prometheus: # Optional.
     enabled: true # if true the pod will be scraped for metrics by prometheus
-    path: /internal/prometheuss # Path to prometheus-metrics
+    path: /internal/prometheus # Path to prometheus-metrics
     # /actuator/prometheus
   resources: # Optional. See: http://kubernetes.io/docs/user-guide/compute-resources/
     limits:
