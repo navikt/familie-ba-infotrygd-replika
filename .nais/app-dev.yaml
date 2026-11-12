@@ -9,7 +9,7 @@ spec:
   image: {{image}}
   port: 8080 # Required. The port number which is exposed by the container and should receive HTTP traffic.
   liveness: # HTTP endpoint that signals 200 OK when the application is running.
-    path: /actuator/health
+    path: /internal/health/liveness
     initialDelay: 10
     timeout: 1
     periodSeconds: 5     # How often (in seconds) to perform the probe. Default to 10 seconds
@@ -17,8 +17,7 @@ spec:
       # nais will try failureThreshold times before giving up and restarting the Pod
     # Defaults to 3
   readiness: # HTTP endpoint that signals 200 OK when it is okay to start routing traffic to the application.
-    path: /actuator/health
-    # /rest/internal/isAlive
+    path: /internal/health/readiness
     initialDelay: 20
     timeout: 1
   replicas: # Optional. Set min = max to disable autoscaling.
@@ -27,7 +26,7 @@ spec:
     cpuThresholdPercentage: 50 # total cpu percentage threshold on deployment, at which point it will increase number of pods if current < max
   prometheus: # Optional.
     enabled: true # if true the pod will be scraped for metrics by prometheus
-    path: /actuator/prometheus # Path to prometheus-metrics
+    path: /internal/prometheus # Path to prometheus-metrics
     # /actuator/prometheus
   resources: # Optional. See: http://kubernetes.io/docs/user-guide/compute-resources/
     limits:
