@@ -23,20 +23,37 @@ spring:
   flyway:
     enabled: true
 
-
 management:
   endpoint:
     info:
       access: none
     health:
       show-details: ALWAYS
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include:
+            - readinessState
+            - db
+        liveness:
+          include:
+            - livenessState
   info:
     defaults:
       enabled: false
   endpoints:
     web:
+      base-path: /internal
       exposure:
         include: health,prometheus
+    health:
+      livenessstate:
+        enabled: true
+      readinessstate:
+        enabled: true
+      db:
+        enabled: true
 
 #oidc...
 http.proxy.parametername: notused

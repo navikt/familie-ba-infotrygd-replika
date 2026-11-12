@@ -35,7 +35,7 @@ class MainTest {
         val response =
             testClient
                 .restTemplateNoAuth(port)
-                .getForEntity("/actuator/health", Any::class.java) as ResponseEntity<*>
+                .getForEntity("/internal/health", Any::class.java) as ResponseEntity<*>
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     }
