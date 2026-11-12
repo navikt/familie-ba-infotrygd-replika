@@ -25,7 +25,6 @@ class SecurityConfiguration(
                     .requestMatchers(
                         "/internal",
                         "/internal/health/**",
-                        "/internal/metrics/**",
                         "/internal/prometheus",
                         "/swagger-ui/**",
                         "/swagger-ui.html",
