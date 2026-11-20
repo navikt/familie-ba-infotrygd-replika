@@ -1,0 +1,96 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: familie-ba-infotrygd-replika
+  namespace: teamfamilie
+  labels:
+    team: teamfamilie
+spec:
+  image: {{image}}
+  port: 8080
+  liveness:
+    path: /internal/health/liveness
+    initialDelay: 10
+    timeout: 1
+    periodSeconds: 5
+    failureThreshold: 10
+  readiness:
+    path: /internal/health/readiness
+    initialDelay: 20
+    timeout: 1
+  replicas:
+    min: 1
+    max: 1
+    cpuThresholdPercentage: 50
+  prometheus:
+    enabled: true
+    path: /internal/prometheus
+  resources:
+    limits:
+      memory: 2096Mi
+    requests:
+      cpu: 400m
+      memory: 2096Mi
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+  gcp:
+    sqlInstances:
+      - name: familie-ba-infotrygd-replika
+        type: POSTGRES_18
+        tier: db-custom-1-3840
+        diskAutoresize: true
+        cascadingDelete: false
+        highAvailability: false
+        pointInTimeRecovery: false
+        maintenance:
+          day: 7
+          hour: 23
+        databases:
+          - name: familie-ba-infotrygd-replika
+            envVarPrefix: DB
+  ingresses:
+    - https://familie-ba-infotrygd-replika.intern.nav.no/
+  accessPolicy:
+    inbound:
+      rules:
+        - application: "familie-ba-sak"
+          namespace: teamfamilie
+          cluster: prod-gcp
+        - application: "familie-baks-mottak"
+          namespace: teamfamilie
+          cluster: prod-gcp
+    outbound:
+      rules:
+        - application: logging
+          namespace: nais-system
+      external:
+        - host: familie-ba-exodus.prod-fss-pub.nais.io
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: true
+      claims:
+        extra:
+          - "NAVident"
+        groups:
+          - id: "024bfb25-ead3-4c04-bbe1-1db3d3362188" # teamfamilie-baks-forvaltning
+      replyURLs:
+        - "https://familie-ba-infotrygd-replika.intern.nav.no/swagger-ui/oauth2-redirect.html"
+      singlePageApplication: true
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: "prod"
+    - name: JDK_JAVA_OPTIONS
+      value: "-XX:MinRAMPercentage=25.0 -XX:MaxRAMPercentage=75.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+    - name: EXODUS_BASE_URL
+      value: https://familie-ba-exodus.prod-fss-pub.nais.io
+    - name: EXODUS_SCOPE
+      value: api://prod-fss.teamfamilie.familie-ba-exodus/.default
+    - name: EXODUS_SCHEDULER_ENABLED
+      value: "false"
