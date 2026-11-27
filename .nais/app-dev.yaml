@@ -30,10 +30,10 @@ spec:
     # /actuator/prometheus
   resources: # Optional. See: http://kubernetes.io/docs/user-guide/compute-resources/
     limits:
-      memory: 2096Mi  # app will be killed if exceeding these limits
+      memory: 512Mi  # app will be killed if exceeding these limits
     requests: # App is guaranteed the requested resources and  will be scheduled on nodes with at least this amount of resources available
-      cpu: 400m
-      memory: 2096Mi
+      cpu: 100m
+      memory: 512Mi
   observability:
     logging:
       destinations:
@@ -96,4 +96,4 @@ spec:
     - name: EXODUS_SCOPE
       value: api://dev-fss.teamfamilie.familie-ba-exodus/.default
     - name: EXODUS_SCHEDULER_ENABLED
-      value: "true"
+      value: "false"
